@@ -1,46 +1,74 @@
 import { useEffect, useState } from "react";
-import { Button, Card, Space, Modal, Form, Input, message } from "antd";
-import { fetchData, DelData, AddData } from "../../../api/index";
+import { Row, Button, Table, Space, Modal, message, Form, Input } from "antd";
 import axios from "axios";
-import "./index.less";
-const ManagerMirror = () => {
+const ManagerUser = () => {
   const [list, setList] = useState([]);
   const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState("add");
   const [form] = Form.useForm();
-  useEffect(() => {
-    getData();
-  }, []);
+  const handleEdit = (data) => {
+    setStatus("edit");
+    setVisible(true);
+    console.log(data);
+    form.setFieldsValue({ ...data });
+  };
+  const columns = [
+    {
+      title: "赛名",
+      dataIndex: "name",
+    },
+    {
+      title: "拓扑图地址",
+      dataIndex: "reserve1",
+    },
+    {
+      title: "裁判",
+      dataIndex: "reserve2",
+    },
+    {
+      title: "靶机id",
+      dataIndex: "reserve3",
+    },
+    {
+      title: "操作",
+      render: (_, record) => {
+        return (
+          <Space>
+            <Button type="primary" onClick={() => handleEdit(record)}>
+              开始比赛
+            </Button>
+          </Space>
+        );
+      },
+    },
+  ];
   const getData = () => {
-    axios.get("/api/myweapon/list").then(({ data }) => {
+    axios.get("/api/match/list").then(({ data }) => {
       setList(data.data);
     });
   };
   const handleDel = (id) => {
     Modal.confirm({
-      title: "确定删除此武器吗?",
+      title: "删除",
+      content: "确定要删除此用户吗?",
       onOk: () => {
-        axios.get(`/api/myweapon/delete?id=${id}`).then(({ data }) => {
+        axios.get(`/api/user/delete?id=${id}`).then(({ data }) => {
           console.log(data);
           if (data.success) {
             message.success("删除成功");
-            getData();
-          } else {
-            message.error(data.message);
+            fetchList();
           }
         });
       },
     });
   };
+  useEffect(() => {
+    getData();
+  }, []);
   const onFinish = (data) => {
     if (status === "add") {
       axios
-        .post("/api/myweapon/save", {
-          reserve3: "",
-          reserve4: "",
-          reserve5: "",
-          status: "",
-          user:"",
+        .post("/api/user/registry", {
           ...data,
         })
         .then(({ data }) => {
@@ -56,8 +84,9 @@ const ManagerMirror = () => {
         });
     } else {
       axios
-        .post("/api/myweapon/update", data)
+        .post("/api/user/update", data)
         .then(({ data }) => {
+          console.log(data, "~~~~~");
           if (data.success) {
             getData();
             setVisible(false);
@@ -70,61 +99,14 @@ const ManagerMirror = () => {
         });
     }
   };
-  const onFinishFailed = () => {};
-  const handleEdit = (item) => {
-    setStatus("edit");
-    setVisible(true);
-    form.setFieldsValue({ ...item });
-  };
-  const handleAdd = () => {
-    setVisible(true);
-    setStatus("add");
-    form.setFieldsValue({
-      name: "",
-      reserve1: "",
-      reserve2: "",
-      reserve3: "",
-      reserve4: "",
-    });
+  const onFinishFailed = () => {
+    s;
   };
   return (
     <>
-      <div>
-        <Button
-          type="primary"
-          onClick={handleAdd}
-          style={{ marginBottom: "20px" }}
-        >
-          新增武器
-        </Button>
-      </div>
-      <div className="images-content">
-        <Space style={{ flexWrap: "wrap" }}>
-          {list.map((item, index) => (
-            <Card
-              size="small"
-              key={index}
-              extra={
-                <>
-                  <Button type="link" onClick={() => handleEdit(item)}>
-                    编辑
-                  </Button>
-                  <Button type="link" danger onClick={() => handleDel(item.id)}>
-                    删除
-                  </Button>
-                </>
-              }
-              title={item.name}
-              style={{ width: 300 }}
-            >
-              <p>创建人：{item.reserve1}</p>
-              <p>sql脚本：{item.reserve2}</p>
-            </Card>
-          ))}
-        </Space>
-      </div>
+      <Table columns={columns} dataSource={list} key={"id"} />
       <Modal
-        title={status === "add" ? "新增武器" : "编辑武器"}
+        title={status === "add" ? "新增用户" : "编辑用户"}
         open={visible}
         footer={null}
         onCancel={() => setVisible(false)}
@@ -146,41 +128,43 @@ const ManagerMirror = () => {
             </Form.Item>
           )}
           <Form.Item
-            label="武器名称"
-            name="name"
+            label="账号"
+            name="username"
             rules={[{ required: true, message: "Please input your name!" }]}
           >
             <Input />
           </Form.Item>
 
           <Form.Item
-            label="创建人"
-            name="reserve1"
-            rules={[{ required: true, message: "Please input your path!" }]}
-          >
-            <Input disabled={status === "edit"} />
-          </Form.Item>
-          <Form.Item
-            label="脚本"
-            name="reserve2"
-            rules={[{ required: true, message: "Please input your path!" }]}
-          >
-            <Input disabled={status === "edit"} />
-          </Form.Item>
-          {/* <Form.Item
-            label="账号"
-            name="reserve3"
-            rules={[{ required: true, message: "Please input your path!" }]}
-          >
-            <Input disabled={status==='edit'}/>
-          </Form.Item> */}
-          {/* <Form.Item
             label="密码"
-            name="reserve4"
+            name="password"
             rules={[{ required: true, message: "Please input your path!" }]}
           >
-            <Input disabled={status==='edit'}/>
-          </Form.Item> */}
+            <Input />
+          </Form.Item>
+          {status === "edit" && (
+            <Form.Item
+              label="用户类型"
+              name="type"
+              rules={[{ required: true, message: "Please input your path!" }]}
+            >
+              <Input />
+            </Form.Item>
+          )}
+          {/* <Form.Item
+      label="账号"
+      name="reserve3"
+      rules={[{ required: true, message: "Please input your path!" }]}
+    >
+      <Input disabled={status==='edit'}/>
+    </Form.Item> */}
+          {/* <Form.Item
+      label="密码"
+      name="reserve4"
+      rules={[{ required: true, message: "Please input your path!" }]}
+    >
+      <Input disabled={status==='edit'}/>
+    </Form.Item> */}
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">
@@ -193,4 +177,4 @@ const ManagerMirror = () => {
   );
 };
 
-export default ManagerMirror;
+export default ManagerUser;
