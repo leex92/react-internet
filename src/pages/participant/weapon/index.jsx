@@ -36,7 +36,6 @@ const ManagerMirror = () => {
     if (status === "add") {
       axios
         .post("/api/myweapon/save", {
-          //用户id
           reserve3: "",
           reserve4: "",
           reserve5: "",

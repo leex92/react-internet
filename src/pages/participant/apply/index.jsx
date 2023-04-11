@@ -14,20 +14,20 @@ const ManagerUser = () => {
   };
   const columns = [
     {
-      title: "编号",
-      dataIndex: "id",
+      title: "赛名",
+      dataIndex: "name",
     },
     {
-      title: "用户名",
-      dataIndex: "username",
+      title: "拓扑图地址",
+      dataIndex: "reserve1",
     },
     {
-      title: "密码",
-      dataIndex: "password",
+      title: "裁判",
+      dataIndex: "reserve2",
     },
     {
-      title: "type",
-      dataIndex: "type",
+      title: "靶机id",
+      dataIndex: "reserve3",
     },
     {
       title: "操作",
@@ -35,7 +35,7 @@ const ManagerUser = () => {
         return (
           <Space>
             <Button type="primary" onClick={() => handleEdit(record)}>
-              编辑
+              申请参加比赛
             </Button>
             <Button type="primary" danger onClick={() => handleDel(record.id)}>
               删除
@@ -46,7 +46,7 @@ const ManagerUser = () => {
     },
   ];
   const getData = () => {
-    axios.get("/api/user/list").then(({ data }) => {
+    axios.get("/api/match/list").then(({ data }) => {
       setList(data.data);
     });
   };
@@ -89,7 +89,7 @@ const ManagerUser = () => {
       axios
         .post("/api/user/update", data)
         .then(({ data }) => {
-          console.log(data,'~~~~~')
+          console.log(data, "~~~~~");
           if (data.success) {
             getData();
             setVisible(false);
@@ -102,10 +102,11 @@ const ManagerUser = () => {
         });
     }
   };
-  const onFinishFailed = () => {s};
+  const onFinishFailed = () => {
+    s;
+  };
   return (
     <>
-      <p>0超级管理员 1 裁判 2攻击者 3 防御者 4 教师</p>
       <Table columns={columns} dataSource={list} key={"id"} />
       <Modal
         title={status === "add" ? "新增用户" : "编辑用户"}

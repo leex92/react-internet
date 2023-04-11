@@ -13,13 +13,19 @@ const Login = () => {
     axios
       .post("api/user/login", params)
       .then(({ data }) => {
-        message.success("登录成功");
-        navigate("/");
+        console.log(data);
+        localStorage.setItem("type", data.data.type);
+        if(data.success){
+          message.success("登录成功");
+          navigate("/");
+        }else{
+          message.error(data.message)
+        }
+       
       })
       .catch((err) => {
         message.error(err.response.data.msg);
       });
-    console.log(params, res);
   };
   const onRegisterFinish = async (data) => {
     const { username, password } = data;
