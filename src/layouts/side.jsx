@@ -37,6 +37,11 @@ const MenuSide = () => {
           <AppstoreOutlined />
         ),
       ];
+    }else if(+type===1){
+      return [
+        getItem(<Link to={"/weapon"}>评分</Link>, "1", <PieChartOutlined />),
+        getItem(<Link to={"/applygame"}>判罚</Link>, "2", <ContainerOutlined />),
+      ];
     }else if(+type===2||+type===3){
       return [
         getItem(<Link to={"/weapon"}>武器管理</Link>, "1", <PieChartOutlined />),
