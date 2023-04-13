@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { Row, Button, Table, Space, Modal, message, Form, Input } from 'antd';
 import axios from 'axios';
-
+import {useSelector} from 'react-redux';
 const ManagerUser = () => {
   const [list, setList] = useState([]);
   const [visible, setVisible] = useState(false);
   const [status, setStatus] = useState('add');
   const [form] = Form.useForm();
-
+  const {type,username} = useSelector((store)=>store.global)
   const handleEdit = (data) => {
     // setStatus('edit');
     // setVisible(true);
@@ -24,8 +24,8 @@ const ManagerUser = () => {
   const handleApply = (data) => {
     axios
       .post('api/matchuser/save', {
-        name: '防御者',
-        status: 3,
+        name: username,
+        status: type,
         reserve1: '',
         reserve2: '',
         reserve3: '',
@@ -57,7 +57,7 @@ const ManagerUser = () => {
     },
     {
       title: '靶机id',
-      dataIndex: 'reserve3',
+      dataIndex: 'reserve4',
     },
     {
       title: '攻击者',

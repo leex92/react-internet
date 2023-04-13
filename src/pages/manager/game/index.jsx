@@ -193,7 +193,7 @@ const Game = () => {
             name="reserve2"
             rules={[{ required: true, message: 'Please input your path!' }]}
           >
-            <Input disabled={status === 'edit'} />
+            <Input  />
           </Form.Item>
           <Form.Item
             label="靶机id"

@@ -1,15 +1,29 @@
-import { useEffect, useState } from 'react';
-import { Row, Button, Table, Space, Modal, message, Form, Input } from 'antd';
-import axios from 'axios';
+import { useEffect, useState } from "react";
+import {
+  Row,
+  Button,
+  Table,
+  Space,
+  Modal,
+  message,
+  Form,
+  Input,
+  Select,
+} from "antd";
+import axios from "axios";
+import { useSelector } from "react-redux";
 const ManagerUser = () => {
   const [list, setList] = useState([]);
+  const [weaponList, setWeaponList] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [status, setStatus] = useState('add');
+  const [status, setStatus] = useState("attack");
+  const [attackData, setAttackData] = useState();
+  const { type } = useSelector((store) => store.global);
   const [form] = Form.useForm();
   const handleEdit = (data) => {
     Modal.confirm({
-      title: '开始比赛',
-      content: '确认开始比赛吗？',
+      title: "开始比赛",
+      content: "确认开始比赛吗？",
       onOk: () => {
         handleStart(data);
       },
@@ -17,13 +31,13 @@ const ManagerUser = () => {
   };
   const handleStart = (data) => {
     axios
-      .post('/api/match/update', {
+      .post("/api/match/update", {
         ...data,
-        reserve5: 'start',
+        reserve5: "start",
       })
       .then(({ data }) => {
         if (data.success) {
-          message.success('比赛开始');
+          message.success("比赛开始");
           getData();
         } else {
           message.error(data.error);
@@ -32,28 +46,28 @@ const ManagerUser = () => {
   };
   const columns = [
     {
-      title: '赛名',
-      dataIndex: 'name',
+      title: "赛名",
+      dataIndex: "name",
     },
     {
-      title: '拓扑图地址',
-      dataIndex: 'reserve1',
+      title: "拓扑图地址",
+      dataIndex: "reserve1",
     },
     {
-      title: '裁判',
-      dataIndex: 'reserve2',
+      title: "裁判",
+      dataIndex: "reserve2",
     },
     {
-      title: '靶机id',
-      dataIndex: 'reserve3',
+      title: "靶机id",
+      dataIndex: "reserve4",
     },
     {
-      title: '攻击者',
-      dataIndex: 'users',
+      title: "攻击者",
+      dataIndex: "users",
       render: (data, record) => {
         if (data.length) {
           const arr = data.filter((item) => item.status == 2);
-          console.log('攻击者', arr);
+          console.log("攻击者", arr);
           return <>{arr[0]?.name}</>;
         } else {
           return <>未知</>;
@@ -61,12 +75,12 @@ const ManagerUser = () => {
       },
     },
     {
-      title: '防御者',
-      dataIndex: 'users',
+      title: "防御者",
+      dataIndex: "users",
       render: (data, record) => {
         if (data.length) {
           const arr = data.filter((item) => item.status == 3);
-          console.log('防御者', arr);
+          console.log("防御者", arr);
           return <>{arr[0]?.name}</>;
         } else {
           return <>未知</>;
@@ -74,29 +88,33 @@ const ManagerUser = () => {
       },
     },
     {
-      title: '比赛状态',
-      dataIndex: 'reserve5',
+      title: "比赛状态",
+      dataIndex: "reserve5",
       render: (data, record) => {
-        if (data === 'start') {
+        if (data === "start") {
           return <>比赛进行中</>;
+        } else if (data === "end") {
+          return <>比赛结束</>;
         } else {
           return <>比赛未开始</>;
         }
       },
     },
     {
-      title: '操作',
+      title: "操作",
       render: (_, record) => {
         return (
           <Space>
             <Button
               type="primary"
               onClick={() => handleEdit(record)}
-              disabled={record.reserve5 === 'start'}
+              disabled={
+                record.reserve5 === "start" || record.reserve5 === "end"
+              }
             >
               开始比赛
             </Button>
-            {record.reserve5 === 'start' && (
+            {record.reserve5 === "start" && (
               <>
                 <Button type="primary" onClick={() => handleAttact(record)}>
                   攻击
@@ -112,37 +130,37 @@ const ManagerUser = () => {
     },
   ];
   const handleAttact = (data) => {
-    axios.get(`/api/myweapon/fire?id=${data.reserve4}`).then(({ data }) => {
-      if (data.success) {
-        message.success('攻击成功');
-      } else {
-        message.error(data.message);
-      }
-    });
+    setStatus("attack");
+    setVisible(true);
+    console.log("攻击时候的data", data);
+    setAttackData(data);
+    // axios.get(`/api/myweapon/fire?id=${data.reserve4}`).then(({ data }) => {
+    //   if (data.success) {
+    //     message.success("攻击成功");
+    //   } else {
+    //     message.error(data.message);
+    //   }
+    // });
   };
   const handleDefense = (data) => {
-    axios.get(`/api/myweapon/fire?id=${data.reserve4}`).then(({ data }) => {
-      if (data.success) {
-        message.success('防御成功');
-      } else {
-        message.error(data.message);
-      }
-    });
+    setStatus("defense");
+    setVisible(true);
+    setAttackData(data);
   };
   const getData = () => {
-    axios.get('/api/match/list').then(({ data }) => {
+    axios.get("/api/match/list").then(({ data }) => {
       setList(data.data);
     });
   };
   const handleDel = (id) => {
     Modal.confirm({
-      title: '删除',
-      content: '确定要删除此用户吗?',
+      title: "删除",
+      content: "确定要删除此用户吗?",
       onOk: () => {
         axios.get(`/api/user/delete?id=${id}`).then(({ data }) => {
           console.log(data);
           if (data.success) {
-            message.success('删除成功');
+            message.success("删除成功");
             fetchList();
           }
         });
@@ -151,49 +169,48 @@ const ManagerUser = () => {
   };
   useEffect(() => {
     getData();
+    getWeaponList();
   }, []);
+  const getWeaponList = () => {
+    axios.get("/api/myweapon/list").then(({ data }) => {
+      setWeaponList(data.data);
+    });
+  };
   const onFinish = (data) => {
-    if (status === 'add') {
-      axios
-        .post('/api/user/registry', {
-          ...data,
-        })
-        .then(({ data }) => {
-          if (data.success) {
-            getData();
-            setVisible(false);
-          } else {
-            message.error(data.message);
-          }
-        })
-        .catch(() => {
-          message.error('新增失败');
-        });
-    } else {
-      axios
-        .post('/api/user/update', data)
-        .then(({ data }) => {
-          console.log(data, '~~~~~');
-          if (data.success) {
-            getData();
-            setVisible(false);
-          } else {
-            message.error(data.message);
-          }
-        })
-        .catch(() => {
-          message.error('修改失败');
-        });
-    }
+    const attTemp = attackData.users.filter((item) => item.status == 2);
+    const defenTemp = attackData.users.filter((item) => item.status == 3);
+    const url = status==='attack'?'/api/myweapon/fire':'/api/myweapon/defense'
+    axios
+      .get(url, {
+        params: {
+          id: attackData.id,
+          user: status === "attack" ? attTemp[0].name : defenTemp[0].name,
+          weaponid: data.weaponid,
+        },
+      })
+      .then(({ data }) => {
+        if (data.success) {
+          message.info(data.message);
+          setVisible(false);
+          getData();
+          getWeaponList();
+        } else {
+          message.error(data.message);
+        }
+        console.log(data, "攻击返回数据");
+      })
+      .catch(() => {
+        message.error("攻击失败");
+      });
   };
   const onFinishFailed = () => {
     s;
   };
   return (
     <>
-      <Table columns={columns} dataSource={list} key={'id'} />
+      <Table columns={columns} dataSource={list} key={"id"} />
       <Modal
-        title={status === 'add' ? '新增用户' : '编辑用户'}
+        title={status === "attack" ? "攻击" : "防御"}
         open={visible}
         footer={null}
         onCancel={() => setVisible(false)}
@@ -209,49 +226,17 @@ const ManagerUser = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          {status === 'edit' && (
-            <Form.Item label="id" name="id">
-              <Input disabled />
-            </Form.Item>
-          )}
           <Form.Item
-            label="账号"
-            name="username"
-            rules={[{ required: true, message: 'Please input your name!' }]}
+            label="请选择武器"
+            name="weaponid"
+            rules={[{ required: true, message: "Please input your path!" }]}
           >
-            <Input />
+            <Select>
+              {weaponList.map((item) => (
+                <Select.Option value={item.id}>{item.name}</Select.Option>
+              ))}
+            </Select>
           </Form.Item>
-
-          <Form.Item
-            label="密码"
-            name="password"
-            rules={[{ required: true, message: 'Please input your path!' }]}
-          >
-            <Input />
-          </Form.Item>
-          {status === 'edit' && (
-            <Form.Item
-              label="用户类型"
-              name="type"
-              rules={[{ required: true, message: 'Please input your path!' }]}
-            >
-              <Input />
-            </Form.Item>
-          )}
-          {/* <Form.Item
-      label="账号"
-      name="reserve3"
-      rules={[{ required: true, message: "Please input your path!" }]}
-    >
-      <Input disabled={status==='edit'}/>
-    </Form.Item> */}
-          {/* <Form.Item
-      label="密码"
-      name="reserve4"
-      rules={[{ required: true, message: "Please input your path!" }]}
-    >
-      <Input disabled={status==='edit'}/>
-    </Form.Item> */}
 
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">

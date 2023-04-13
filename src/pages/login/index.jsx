@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "./index.less";
 import request from "../../utils/request";
 import { useSelector, useDispatch } from "react-redux";
-import { handleLogin ,setType} from "../../app/globalSlice";
+import { handleLogin ,setType,setName} from "../../app/globalSlice";
 const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -21,6 +21,7 @@ const Login = () => {
         if (data.success) {
           message.success("登录成功");
           dispatch(handleLogin());
+          dispatch(setName(params.username))
           dispatch(setType(data.data.type))
           navigate("/");
         } else {
