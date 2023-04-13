@@ -12,6 +12,8 @@ import ManageScene from "./pages/manager/scene";
 import ParticipantWeapon from "./pages/participant/weapon";
 import ApplyGame from "./pages/participant/apply";
 import JoinGame from "./pages/participant/join";
+import Score from "./pages/judge/score";
+import Judge from "./pages/judge/judge";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 function App() {
@@ -44,8 +46,8 @@ function App() {
           )}
           {+type === 1 && (
             <>
-              <Route path="/" element={<ParticipantWeapon />}></Route>
-              <Route path="/weapon" element={<ParticipantWeapon />}></Route>
+              <Route path="/" element={<Score />}></Route>
+              <Route path="/judge" element={<Judge />}></Route>
             </>
           )}
           {(+type === 2 || +type === 3) && (
