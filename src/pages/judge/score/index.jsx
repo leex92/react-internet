@@ -48,10 +48,10 @@ const ManagerUser = () => {
       title: "分数",
       dataIndex: "reserve4",
     },
-    {
-      title: "判罚分数",
-      dataIndex: "reserve5",
-    },
+    // {
+    //   title: "判罚分数",
+    //   dataIndex: "reserve5",
+    // },
     {
       title: "操作",
       render: (_, record) => {
