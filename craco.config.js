@@ -2,7 +2,7 @@ const CracoLessPlugin = require('craco-less');
 const path = require('path');
 
 const pathResolve = (pathUrl) => path.join(__dirname, pathUrl);
-const proxyUrl1 = 'http://43.143.25.147:8005';
+const proxyUrl1 = 'http://43.143.25.147:8000';
 module.exports = {
   webpack: {
     alias: {

@@ -4,8 +4,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./index.less";
 import request from "../../utils/request";
+import { useSelector, useDispatch } from "react-redux";
+import { handleLogin ,setType} from "../../app/globalSlice";
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [value, setValue] = useState("login");
   const onFinish = async (data) => {
     const { username, password } = data;
@@ -15,13 +18,14 @@ const Login = () => {
       .then(({ data }) => {
         console.log(data);
         localStorage.setItem("type", data.data.type);
-        if(data.success){
+        if (data.success) {
           message.success("登录成功");
+          dispatch(handleLogin());
+          dispatch(setType(data.data.type))
           navigate("/");
-        }else{
-          message.error(data.message)
+        } else {
+          message.error(data.message);
         }
-       
       })
       .catch((err) => {
         message.error(err.response.data.msg);

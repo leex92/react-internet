@@ -10,6 +10,7 @@ const Header = () => {
   }, []);
   const handleExit = () => {
     navigate("/login");
+    
   };
   return (
     <div className="header">
