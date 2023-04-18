@@ -4,8 +4,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './index.less';
 import request from '../../utils/request';
+import { useSelector, useDispatch } from 'react-redux';
+import { handleLogin, setType, setName } from '../../app/globalSlice';
 const Login = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [value, setValue] = useState('login');
   const onFinish = async (data) => {
     const { username, password } = data;
@@ -13,11 +16,16 @@ const Login = () => {
     axios
       .post('api/user/login', params)
       .then(({ data }) => {
+        console.log(data);
+        localStorage.setItem('type', data.data.type);
         if (data.success) {
           message.success('登录成功');
+          dispatch(handleLogin());
+          dispatch(setName(params.username));
+          dispatch(setType(data.data.type));
           navigate('/');
         } else {
-          message.error('登录失败');
+          message.error(data.message);
         }
       })
       .catch((err) => {
