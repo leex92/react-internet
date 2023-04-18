@@ -1,34 +1,37 @@
-import { Button, Checkbox, Form, Input, message, Radio } from "antd";
-import axios from "axios";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "./index.less";
-import request from "../../utils/request";
+import { Button, Checkbox, Form, Input, message, Radio } from 'antd';
+import axios from 'axios';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import './index.less';
+import request from '../../utils/request';
 const Login = () => {
   const navigate = useNavigate();
-  const [value, setValue] = useState("login");
+  const [value, setValue] = useState('login');
   const onFinish = async (data) => {
     const { username, password } = data;
     const params = { username, password };
     axios
-      .post("api/user/login", params)
+      .post('api/user/login', params)
       .then(({ data }) => {
-        message.success("登录成功");
-        navigate("/");
+        if (data.success) {
+          message.success('登录成功');
+          navigate('/');
+        } else {
+          message.error('登录失败');
+        }
       })
       .catch((err) => {
         message.error(err.response.data.msg);
       });
-    console.log(params, res);
   };
   const onRegisterFinish = async (data) => {
-    const { username, password } = data;
-    const params = { username, password };
+    const { username, password, type } = data;
+    console.log('注册data', data);
     axios
-      .post("api/user/registry", params)
+      .post('api/user/registry', data)
       .then(({ data }) => {
         if (data.success) {
-          message.success("注册成功，请登录");
+          message.success('注册成功，请登录');
         } else {
           message.error(data.message);
         }
@@ -36,7 +39,6 @@ const Login = () => {
       .catch((err) => {
         message.error(err.response.data.msg);
       });
-    console.log(params, res);
   };
   const onFinishFailed = (data) => {
     console.log(data);
@@ -57,7 +59,7 @@ const Login = () => {
         <Radio.Button value="login">登录</Radio.Button>
         <Radio.Button value="register">注册</Radio.Button>
       </Radio.Group>
-      {value === "login" ? (
+      {value === 'login' ? (
         <Form
           name="basic"
           labelCol={{
@@ -82,7 +84,7 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your username!",
+                message: 'Please input your username!',
               },
             ]}
           >
@@ -95,7 +97,7 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your password!",
+                message: 'Please input your password!',
               },
             ]}
           >
@@ -137,7 +139,7 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your username!",
+                message: 'Please input your username!',
               },
             ]}
           >
@@ -150,11 +152,26 @@ const Login = () => {
             rules={[
               {
                 required: true,
-                message: "Please input your password!",
+                message: 'Please input your password!',
               },
             ]}
           >
             <Input.Password />
+          </Form.Item>
+          <Form.Item
+            label="选择角色"
+            name="type"
+            rules={[
+              {
+                required: true,
+                message: 'Please input your password!',
+              },
+            ]}
+          >
+            <Radio.Group>
+              <Radio value="2"> 进攻者 </Radio>
+              <Radio value="3"> 防御者 </Radio>
+            </Radio.Group>
           </Form.Item>
           <Form.Item
             wrapperCol={{
