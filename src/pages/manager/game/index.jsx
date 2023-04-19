@@ -1,29 +1,43 @@
-import { useEffect, useState } from 'react';
-import { Button, Card, Space, Modal, Form, Input, message, Upload } from 'antd';
-import { fetchData, DelData, AddData } from '../../../api/index';
-import axios from 'axios';
-import './index.less';
+import { useEffect, useState } from "react";
+import {
+  Button,
+  Card,
+  Space,
+  Modal,
+  Form,
+  Input,
+  message,
+  Upload,
+  Select,
+} from "antd";
+import { fetchData, DelData, AddData } from "../../../api/index";
+import axios from "axios";
+import "./index.less";
 const Game = () => {
   const [list, setList] = useState([]);
+  const [sceneList, setSceneList] = useState([]);
+  const [judgeList, setJudgeList] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [status, setStatus] = useState('add');
+  const [status, setStatus] = useState("add");
   const [form] = Form.useForm();
   useEffect(() => {
     getData();
+    getSceneData();
+    getJudgeData();
   }, []);
   const getData = () => {
-    axios.get('/api/match/list').then(({ data }) => {
+    axios.get("/api/match/list").then(({ data }) => {
       setList(data.data);
     });
   };
   const handleDel = (id) => {
     Modal.confirm({
-      title: '确定删除此比赛吗?',
+      title: "确定删除此比赛吗?",
       onOk: () => {
         axios.get(`/api/match/delete?id=${id}`).then(({ data }) => {
           console.log(data);
           if (data.success) {
-            message.success('删除成功');
+            message.success("删除成功");
             getData();
           } else {
             message.error(data.message);
@@ -32,17 +46,24 @@ const Game = () => {
       },
     });
   };
+  const getSceneData = () => {
+    axios.get("/api/scene/list").then(({ data }) => {
+      setSceneList(data.data);
+    });
+  };
   const onFinish = (data) => {
-    if (status === 'add') {
+    console.log(data.reserve2);
+    const temp = sceneList.filter((item) => item.id == data.reserve3);
+    if (status === "add") {
       axios
-        .post('/api/match/save', {
-          name: '',
-          reserve1: '',
-          reserve2: '',
-          reserve3: '',
-          reserve4: '',
-          reserve5: '',
-          status: '',
+        .post("/api/match/save", {
+          name: "",
+          reserve1: temp[0].reserve1,
+          reserve2: "",
+          reserve3: "",
+          reserve4: temp[0].matchid,
+          reserve5: "",
+          status: "",
           ...data,
         })
         .then(({ data }) => {
@@ -54,18 +75,18 @@ const Game = () => {
           }
         })
         .catch(() => {
-          message.error('新增失败');
+          message.error("新增失败");
         });
     } else {
       axios
-        .post('/api/match/update', {
-          name: '',
-          reserve1: '',
-          reserve2: '',
-          reserve3: '',
-          reserve4: '',
-          reserve5: '',
-          status: '',
+        .post("/api/match/update", {
+          name: "",
+          reserve1: temp[0].reserve1,
+          reserve2: "",
+          reserve3: "",
+          reserve4: temp[0].matchid,
+          reserve5: "",
+          status: "",
           ...data,
         })
         .then(({ data }) => {
@@ -77,27 +98,27 @@ const Game = () => {
           }
         })
         .catch(() => {
-          message.error('修改失败');
+          message.error("修改失败");
         });
     }
   };
   const onFinishFailed = () => {};
   const handleEdit = (item) => {
-    setStatus('edit');
+    setStatus("edit");
     setVisible(true);
     form.setFieldsValue({ ...item });
   };
   const handleAdd = () => {
     setVisible(true);
-    setStatus('add');
+    setStatus("add");
     form.setFieldsValue({
-      name: '',
-      reserve1: '',
-      reserve2: '',
-      reserve3: '',
-      reserve4: '',
-      reserve5: '',
-      status: '',
+      name: "",
+      reserve1: "",
+      reserve2: "",
+      reserve3: "",
+      reserve4: "",
+      reserve5: "",
+      status: "",
     });
   };
   const fileChange = (info) => {
@@ -108,19 +129,24 @@ const Game = () => {
       });
     }
   };
+  const getJudgeData = () => {
+    axios.get("/api/user/list").then(({ data }) => {
+      setJudgeList(data.data.filter((item) => item.type == 1));
+    });
+  };
   return (
     <>
       <div>
         <Button
           type="primary"
           onClick={handleAdd}
-          style={{ marginBottom: '20px' }}
+          style={{ marginBottom: "20px" }}
         >
           新增比赛
         </Button>
       </div>
       <div className="images-content">
-        <Space style={{ flexWrap: 'wrap' }}>
+        <Space style={{ flexWrap: "wrap" }}>
           {list.map((item, index) => (
             <Card
               size="small"
@@ -138,25 +164,34 @@ const Game = () => {
               title={item.name}
               style={{ width: 300 }}
             >
-              <p>拓扑图：{item.reserve1}</p>
-              <p>裁判：{item.reserve2}</p>
+              <div>
+                拓扑图：
+                <img src={item.reserve1} alt="" width={100} height={100} />
+              </div>
+              <div>
+                裁判：
+                <Select
+                  placeholder="请选择裁判"
+                  value={+item.reserve2}
+                  // onChange={onGenderChange}
+                  // allowClear
+                  disabled
+                >
+                  {judgeList.map((val, index) => (
+                    <Option value={val.id}>{val.username}</Option>
+                  ))}
+                </Select>
+              </div>
             </Card>
           ))}
         </Space>
       </div>
       <Modal
-        title={status === 'add' ? '新增比赛' : '编辑比赛'}
+        title={status === "add" ? "新增比赛" : "编辑比赛"}
         open={visible}
         footer={null}
         onCancel={() => setVisible(false)}
       >
-        {status === 'add' && (
-          <Upload name="file" action="/api/images/upload" onChange={fileChange}>
-            <Button style={{ marginLeft: '150px', marginBottom: '20px' }}>
-              上传拓扑文件获取地址
-            </Button>
-          </Upload>
-        )}
         <Form
           name="form"
           form={form}
@@ -168,7 +203,7 @@ const Game = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          {status === 'edit' && (
+          {status === "edit" && (
             <Form.Item label="id" name="id">
               <Input disabled />
             </Form.Item>
@@ -176,31 +211,40 @@ const Game = () => {
           <Form.Item
             label="名称"
             name="name"
-            rules={[{ required: true, message: 'Please input your name!' }]}
+            rules={[{ required: true, message: "Please input your name!" }]}
           >
             <Input />
           </Form.Item>
-
+          {/* //reserve1为拓扑图地址 reserve4为靶机id*/}
           <Form.Item
-            label="拓扑图地址"
-            name="reserve1"
-            rules={[{ required: true, message: 'Please input your path!' }]}
+            label="选择场景"
+            name="reserve3"
+            rules={[{ required: true, message: "Please input your path!" }]}
           >
-            <Input disabled />
+            <Select
+              placeholder="请选择场景"
+              // onChange={onGenderChange}
+              // allowClear
+            >
+              {sceneList.map((item) => (
+                <Option value={item.id}>{item.name}</Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item
             label="裁判"
             name="reserve2"
-            rules={[{ required: true, message: 'Please input your path!' }]}
+            rules={[{ required: true, message: "Please input your path!" }]}
           >
-            <Input  />
-          </Form.Item>
-          <Form.Item
-            label="靶机id"
-            name="reserve4"
-            rules={[{ required: true, message: 'Please input your path!' }]}
-          >
-            <Input />
+            <Select
+              placeholder="请选择裁判"
+              // onChange={onGenderChange}
+              // allowClear
+            >
+              {judgeList.map((val, index) => (
+                <Option value={val.id}>{val.username}</Option>
+              ))}
+            </Select>
           </Form.Item>
           <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
             <Button type="primary" htmlType="submit">

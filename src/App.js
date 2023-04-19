@@ -10,6 +10,7 @@ import ManageUser from "./pages/manager/user";
 import ManageGame from "./pages/manager/game";
 import ManageScene from "./pages/manager/scene";
 import ParticipantWeapon from "./pages/participant/weapon";
+import ParticipantPerson from "./pages/participant/person";
 import ApplyGame from "./pages/participant/apply";
 import JoinGame from "./pages/participant/join";
 import Score from "./pages/judge/score";
@@ -53,6 +54,7 @@ function App() {
           {(+type === 2 || +type === 3) && (
             <>
               <Route path="/" element={<ParticipantWeapon />}></Route>
+              <Route path="/person" element={<ParticipantPerson />}></Route>
               <Route path="/weapon" element={<ParticipantWeapon />}></Route>
               <Route path="/applygame" element={<ApplyGame />}></Route>
               <Route path="/join" element={<JoinGame />}></Route>

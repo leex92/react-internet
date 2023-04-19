@@ -24,11 +24,23 @@ const MenuSide = () => {
   const [collapsed, setCollapsed] = useState(false);
   const [type, setType] = useState(0);
   const items = useMemo(() => {
-    if(+type===0){
+    if (+type === 0) {
       return [
-        getItem(<Link to={"/mirror"}>镜像管理</Link>, "1", <PieChartOutlined />),
-        getItem(<Link to={"/scene"}>场景管理</Link>, "2", <ContainerOutlined />),
-        getItem(<Link to={"/weapon"}>武器管理</Link>, "3", <ContainerOutlined />),
+        getItem(
+          <Link to={"/mirror"}>镜像管理</Link>,
+          "1",
+          <PieChartOutlined />
+        ),
+        getItem(
+          <Link to={"/scene"}>场景管理</Link>,
+          "2",
+          <ContainerOutlined />
+        ),
+        getItem(
+          <Link to={"/weapon"}>武器管理</Link>,
+          "3",
+          <ContainerOutlined />
+        ),
         getItem(<Link to={"/range"}>靶机管理</Link>, "4", <DesktopOutlined />),
         getItem(<Link to={"/game"}>比赛管理</Link>, "5", <MailOutlined />),
         getItem(
@@ -37,22 +49,34 @@ const MenuSide = () => {
           <AppstoreOutlined />
         ),
       ];
-    }else if(+type===1){
+    } else if (+type === 1) {
       return [
         getItem(<Link to={"/"}>评分</Link>, "1", <PieChartOutlined />),
         getItem(<Link to={"/judge"}>判罚</Link>, "2", <ContainerOutlined />),
       ];
-    }else if(+type===2||+type===3){
+    } else if (+type === 2 || +type === 3) {
       return [
-        getItem(<Link to={"/weapon"}>武器管理</Link>, "1", <PieChartOutlined />),
-        getItem(<Link to={"/applygame"}>申请比赛</Link>, "2", <ContainerOutlined />),
-        getItem(<Link to={"/join"}>正式比赛</Link>, "3", <ContainerOutlined />),
+        getItem(
+          <Link to={"/weapon"}>武器管理</Link>,
+          "1",
+          <PieChartOutlined />
+        ),
+        getItem(
+          <Link to={"/person"}>参赛信息</Link>,
+          "2",
+          <PieChartOutlined />
+        ),
+        getItem(
+          <Link to={"/applygame"}>申请比赛</Link>,
+          "3",
+          <ContainerOutlined />
+        ),
+        getItem(<Link to={"/join"}>正式比赛</Link>, "4", <ContainerOutlined />),
       ];
-    }else{
-      return []
+    } else {
+      return [];
     }
-  },[type]);
- 
+  }, [type]);
 
   useState(() => {
     const local = localStorage.getItem("type");
