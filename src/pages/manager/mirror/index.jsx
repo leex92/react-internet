@@ -97,9 +97,9 @@ const Weapon = () => {
           <Button type="primary" onClick={handleAdd}>
             新增镜像
           </Button>
-          <Upload {...props}>
+          {/* <Upload {...props}>
             <Button>上传</Button>
-          </Upload>
+          </Upload> */}
         </Space>
       </div>
       <div className="images-content">
