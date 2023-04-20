@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Button,
   Card,
@@ -9,15 +9,15 @@ import {
   message,
   Select,
   Upload,
-} from "antd";
-import { fetchData, DelData, AddData } from "../../../api/index";
-import axios from "axios";
-import "./index.less";
+} from 'antd';
+import { fetchData, DelData, AddData } from '../../../api/index';
+import axios from 'axios';
+import './index.less';
 const ManagerMirror = () => {
   const [list, setList] = useState([]);
   const [weaponList, setWeaponList] = useState([]);
   const [visible, setVisible] = useState(false);
-  const [status, setStatus] = useState("add");
+  const [status, setStatus] = useState('add');
   const [imgUrl, setImgUrl] = useState();
   const [form] = Form.useForm();
   useEffect(() => {
@@ -25,24 +25,24 @@ const ManagerMirror = () => {
     getWeaponList();
   }, []);
   const getData = () => {
-    axios.get("/api/scene/list").then(({ data }) => {
+    axios.get('/api/scene/list').then(({ data }) => {
       setList(data.data);
     });
   };
   //获取靶机列表
   const getWeaponList = () => {
-    axios.get("/api/weapon/list").then(({ data }) => {
+    axios.get('/api/weapon/list').then(({ data }) => {
       setWeaponList(data.data);
     });
   };
   const handleDel = (id) => {
     Modal.confirm({
-      title: "确定删除此场景吗?",
+      title: '确定删除此场景吗?',
       onOk: () => {
         axios.get(`/api/scene/delete?id=${id}`).then(({ data }) => {
           console.log(data);
           if (data.success) {
-            message.success("删除成功");
+            message.success('删除成功');
             getData();
           } else {
             message.error(data.message);
@@ -52,12 +52,12 @@ const ManagerMirror = () => {
     });
   };
   const props = {
-    name: "file",
-    action: "/api/images/upload",
+    name: 'file',
+    action: '/api/images/upload',
     onChange(info) {
-      console.log("info", info);
+      console.log('info', info);
       if (info?.file?.response?.success) {
-        form.setFieldValue({
+        form.setFieldsValue({
           reserve1: info.file.response.data,
         });
         console.log(info.file.response.data);
@@ -67,15 +67,15 @@ const ManagerMirror = () => {
   };
   console.log(imgUrl);
   const onFinish = (data) => {
-    if (status === "add") {
+    if (status === 'add') {
       axios
-        .post("/api/scene/save", {
-          reserve2: "",
-          reserve3: "",
-          reserve4: "",
-          reserve5: "",
-          status: "",
-          user: "",
+        .post('/api/scene/save', {
+          reserve2: '',
+          reserve3: '',
+          reserve4: '',
+          reserve5: '',
+          status: '',
+          user: '',
           ...data,
         })
         .then(({ data }) => {
@@ -87,11 +87,11 @@ const ManagerMirror = () => {
           }
         })
         .catch(() => {
-          message.error("新增失败");
+          message.error('新增失败');
         });
     } else {
       axios
-        .post("/api/scene/update", data)
+        .post('/api/scene/update', data)
         .then(({ data }) => {
           if (data.success) {
             getData();
@@ -101,25 +101,26 @@ const ManagerMirror = () => {
           }
         })
         .catch(() => {
-          message.error("修改失败");
+          message.error('修改失败');
         });
     }
   };
   const onFinishFailed = () => {};
   const handleEdit = (item) => {
-    setStatus("edit");
+    setStatus('edit');
     setVisible(true);
     form.setFieldsValue({ ...item });
   };
+
   const handleAdd = () => {
     setVisible(true);
-    setStatus("add");
+    setStatus('add');
     form.setFieldsValue({
-      name: "",
-      reserve1: "",
-      reserve2: "",
-      reserve3: "",
-      reserve4: "",
+      name: '',
+      reserve1: '',
+      reserve2: '',
+      reserve3: '',
+      reserve4: '',
     });
   };
   return (
@@ -128,13 +129,13 @@ const ManagerMirror = () => {
         <Button
           type="primary"
           onClick={handleAdd}
-          style={{ marginBottom: "20px" }}
+          style={{ marginBottom: '20px' }}
         >
           新增场景
         </Button>
       </div>
       <div className="images-content">
-        <Space style={{ flexWrap: "wrap" }}>
+        <Space style={{ flexWrap: 'wrap' }}>
           {list.map((item, index) => (
             <Card
               size="small"
@@ -164,7 +165,7 @@ const ManagerMirror = () => {
                   {weaponList.map((val) => (
                     <Option value={val.id}>{val.name}</Option>
                   ))}
-                  <Option value={10}>{"测试靶机"}</Option>
+                  <Option value={10}>{'测试靶机'}</Option>
                 </Select>
               </p>
               <div>
@@ -176,11 +177,14 @@ const ManagerMirror = () => {
         </Space>
       </div>
       <Modal
-        title={status === "add" ? "新增场景" : "编辑场景"}
+        title={status === 'add' ? '新增场景' : '编辑场景'}
         open={visible}
         footer={null}
         onCancel={() => setVisible(false)}
       >
+        <Upload {...props}>
+          <Button>上传图片</Button>
+        </Upload>
         <Form
           name="form"
           form={form}
@@ -192,7 +196,7 @@ const ManagerMirror = () => {
           onFinishFailed={onFinishFailed}
           autoComplete="off"
         >
-          {status === "edit" && (
+          {status === 'edit' && (
             <Form.Item label="id" name="id">
               <Input disabled />
             </Form.Item>
@@ -200,7 +204,7 @@ const ManagerMirror = () => {
           <Form.Item
             label="场景名称"
             name="name"
-            rules={[{ required: true, message: "Please input your name!" }]}
+            rules={[{ required: true, message: 'Please input your name!' }]}
           >
             <Input />
           </Form.Item>
@@ -208,18 +212,15 @@ const ManagerMirror = () => {
           <Form.Item
             label="图片地址"
             name="reserve1"
-            rules={[{ required: true, message: "Please input your path!" }]}
+            rules={[{ required: true, message: '上传图片地址!' }]}
           >
-            <Upload {...props}>
-              <Button>上传图片</Button>
-            </Upload>
             {/* <p>{imgUrl}</p> */}
-            <Input value={imgUrl} disabled/>
+            <Input disabled />
           </Form.Item>
           <Form.Item
             label="选择靶机"
             name="matchid"
-            rules={[{ required: true, message: "请选择靶机" }]}
+            rules={[{ required: true, message: '请选择靶机' }]}
           >
             <Select
               placeholder="请选择靶机"
